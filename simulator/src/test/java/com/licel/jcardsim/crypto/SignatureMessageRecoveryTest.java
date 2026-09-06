@@ -21,33 +21,25 @@ public class SignatureMessageRecoveryTest extends SimulatorCoreTest {
     private static final byte[] RSA_PUB_PRIV_KEY_MOD = Hex.decode("bedfd37a08e29a5827542a4918cee41a60dc6275bdb08d15a365e67ba9dc09115f9fbf29e6c282c8356b0f109b1962fdbd964921e4220808806cd1dea6d3c38f");
     private static final byte[] RSA_PRIV_KEY_EXP = Hex.decode("8421fe0ba4caf97dbcfc0ea9bb7abd7d65402b08c6dfc94b096a293bc242882344af08824cff42a4b8d2dacceec534ed7101ab3b76de6ca2cb7c38b69a4b2801");
 
-    static RSAPublicKey pubKey;
-    static RSAPrivateKey privKey;
-    static SignatureMessageRecovery sig;
-    static KeyPair selfTestKeys;
+    RSAPublicKey pubKey;
+    RSAPrivateKey privKey;
+    KeyPair selfTestKeys;
 
-    /**
-     * Only this class's install method should create the applet object.
-     */
     @BeforeClass
-    public static void setUp() {
+    public void setUp() {
         pubKey = (RSAPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, KeyBuilder.LENGTH_RSA_512, false);
         privKey = (RSAPrivateKey) KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PRIVATE, KeyBuilder.LENGTH_RSA_512, false);
         privKey.setExponent(RSA_PRIV_KEY_EXP, (short) 0, (short) RSA_PRIV_KEY_EXP.length);
         privKey.setModulus(RSA_PUB_PRIV_KEY_MOD, (short) 0, (short) RSA_PUB_PRIV_KEY_MOD.length);
         pubKey.setExponent(RSA_PUB_KEY_EXP, (short) 0, (short) RSA_PUB_KEY_EXP.length);
         pubKey.setModulus(RSA_PUB_PRIV_KEY_MOD, (short) 0, (short) RSA_PUB_PRIV_KEY_MOD.length);
-        sig = (SignatureMessageRecovery) Signature.getInstance(Signature.ALG_RSA_SHA_ISO9796_MR, false);
         selfTestKeys = new KeyPair(KeyPair.ALG_RSA_CRT, KeyBuilder.LENGTH_RSA_2048);
         selfTestKeys.genKeyPair();
     }
 
-
-    /**
-     *
-     */
     @Test
     public void testCryptoSignAndVerifyFullMsgRecovery() {
+        SignatureMessageRecovery sig = (SignatureMessageRecovery) Signature.getInstance(Signature.ALG_RSA_SHA_ISO9796_MR, false);
         byte[] buffer = new byte[1];
 
         sig.init(pubKey, Signature.MODE_VERIFY);
@@ -64,6 +56,7 @@ public class SignatureMessageRecoveryTest extends SimulatorCoreTest {
 
     @Test
     public void testSelfCryptoSignAndVerifyFullMsgRecovery() {
+        SignatureMessageRecovery sig = (SignatureMessageRecovery) Signature.getInstance(Signature.ALG_RSA_SHA_ISO9796_MR, false);
         byte[] data = new byte[41];
         for (byte i = 0; i < data.length; i++) {
             data[i] = i;
@@ -87,6 +80,7 @@ public class SignatureMessageRecoveryTest extends SimulatorCoreTest {
 
     @Test
     public void testCryptoVerifyPartMsgRecovery() {
+        SignatureMessageRecovery sig = (SignatureMessageRecovery) Signature.getInstance(Signature.ALG_RSA_SHA_ISO9796_MR, false);
         byte[] data = new byte[70];
         for (byte i = 0; i < data.length; i++) {
             data[i] = i;
@@ -110,6 +104,7 @@ public class SignatureMessageRecoveryTest extends SimulatorCoreTest {
 
     @Test
     public void testSelfCryptoSignAndVerifyPartMsgRecovery() {
+        SignatureMessageRecovery sig = (SignatureMessageRecovery) Signature.getInstance(Signature.ALG_RSA_SHA_ISO9796_MR, false);
         byte[] data = new byte[(short) 256];
         for (short i = 0; i < data.length; i++) {
             data[i] = (byte) i;
