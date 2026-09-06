@@ -35,9 +35,11 @@ today:
 reuse:
 	reuse --no-multiprocessing lint
 
+ci:
+	CI=true ./mvnw -U
+
 # Everything a commit must pass before it is ready: REUSE, then the full check build as CI runs it
-gate: reuse
-	CI=true ./mvnw -B -Pcheck clean verify
+gate: reuse ci
 
 format:
 	./mvnw -q spotless:apply

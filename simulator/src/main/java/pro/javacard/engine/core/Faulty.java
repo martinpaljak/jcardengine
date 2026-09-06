@@ -5,6 +5,7 @@ package pro.javacard.engine.core;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -49,7 +50,8 @@ public final class Faulty {
         // structure)
         try {
             var clazz = Class.forName(className);
-            var classLocation = clazz.getProtectionDomain().getCodeSource().getLocation();
+            var codeSource = clazz.getProtectionDomain().getCodeSource();
+            var classLocation = codeSource == null ? null : codeSource.getLocation();
             if (classLocation != null) {
                 var classRoot = Path.of(classLocation.toURI());
                 var outDirs = new String[]{"target/classes", "target/test-classes", "build/classes/java/main"};
@@ -71,7 +73,7 @@ public final class Faulty {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | URISyntaxException | IOException e) {
             // ignore
         }
 

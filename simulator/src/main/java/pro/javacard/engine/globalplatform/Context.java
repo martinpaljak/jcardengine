@@ -9,6 +9,10 @@ import java.util.Set;
 // so value equality also coincides with reference identity.
 public record Context(Set<EngineRegistryEntry> packages) {
 
+    public Context {
+        packages = Set.copyOf(packages);
+    }
+
     // The JCRE's own context. It owns no applet package, so it equals no applet context and needs no
     // special case at a comparison site.
     public static final Context JCRE = new Context(Set.of());

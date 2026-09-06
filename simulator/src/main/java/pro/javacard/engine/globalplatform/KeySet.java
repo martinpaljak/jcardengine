@@ -5,6 +5,7 @@ package pro.javacard.engine.globalplatform;
 import pro.javacard.tlv.TLV;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -12,6 +13,10 @@ import java.util.TreeMap;
 // One KVN's worth of keys held by a security domain. Mirrors GPC v2.3.1 7.5.1: the SD stores
 // keys keyed by (KID, KVN); whichever SCP the SD speaks picks up the matching KVN at IU time.
 public record KeySet(byte kvn, SortedMap<Byte, KeyEntry> entries) {
+
+    public KeySet {
+        entries = Collections.unmodifiableSortedMap(new TreeMap<>(entries));
+    }
 
     // De facto SCP02/SCP03 KID convention; GPC v2.3.1 7.5.1 says KIDs are arbitrary.
     public static final byte KID_ENC = 0x01;

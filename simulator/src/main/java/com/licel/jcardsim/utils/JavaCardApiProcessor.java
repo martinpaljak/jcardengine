@@ -11,9 +11,8 @@ import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,12 +83,11 @@ public class JavaCardApiProcessor {
     public static void proxyClass(File buildDir, String proxyClassName, String targetClassName, boolean skipConstructor, Map<String, String> map) throws IOException {
         System.out.println("Proxying " + proxyClassName + " to " + targetClassName);
         File proxyFile = new File(buildDir, proxyClassName.replace(".", File.separator) + ".class");
-        FileInputStream fProxyClass = new FileInputStream(proxyFile);
-        FileInputStream fTargetClass = new FileInputStream(new File(buildDir, targetClassName.replace(".", File.separator) + ".class"));
-        ClassReader crProxy = new ClassReader(fProxyClass);
+        File targetFile = new File(buildDir, targetClassName.replace(".", File.separator) + ".class");
+        ClassReader crProxy = new ClassReader(Files.readAllBytes(proxyFile.toPath()));
         ClassNode cnProxy = new ClassNode();
         crProxy.accept(cnProxy, 0);
-        ClassReader crTarget = new ClassReader(fTargetClass);
+        ClassReader crTarget = new ClassReader(Files.readAllBytes(targetFile.toPath()));
         ClassNode cnTarget = new ClassNode();
         crTarget.accept(cnTarget, 0);
 
@@ -128,11 +126,7 @@ public class JavaCardApiProcessor {
         ClassWriter cw = new ClassWriter(crTarget, ClassWriter.COMPUTE_FRAMES);
         MergeAdapter ma = new MergeAdapter(cw, cnProxyRemapped, skipConstructor);
         cnTarget.accept(ma);
-        fProxyClass.close();
-        fTargetClass.close();
-        FileOutputStream fos = new FileOutputStream(new File(buildDir, targetClassName.replace(".", File.separator) + ".class"));
-        fos.write(cw.toByteArray());
-        fos.close();
+        Files.write(targetFile.toPath(), cw.toByteArray());
         // remove proxy class
         if (!proxyFile.delete()) {
             System.err.println("Could not delete " + proxyFile.getAbsolutePath());
@@ -140,18 +134,15 @@ public class JavaCardApiProcessor {
     }
 
     public static void proxyExceptionClass(File buildDir, String targetClassName) throws IOException {
-        FileInputStream fTargetClass = new FileInputStream(new File(buildDir, targetClassName.replace(".", File.separator) + ".class"));
-        ClassReader crTarget = new ClassReader(fTargetClass);
+        File targetFile = new File(buildDir, targetClassName.replace(".", File.separator) + ".class");
+        ClassReader crTarget = new ClassReader(Files.readAllBytes(targetFile.toPath()));
         ClassNode cnTarget = new ClassNode();
         crTarget.accept(cnTarget, 0);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         ExceptionClassProxy ecc = new ExceptionClassProxy(cw, cnTarget.version, cnTarget.name, cnTarget.superName);
         cnTarget.accept(ecc);
 
-        fTargetClass.close();
-        FileOutputStream fos = new FileOutputStream(new File(buildDir, targetClassName.replace(".", File.separator) + ".class"));
-        fos.write(cw.toByteArray());
-        fos.close();
+        Files.write(targetFile.toPath(), cw.toByteArray());
     }
 
     static class ExceptionClassProxy extends ClassVisitor implements Opcodes {

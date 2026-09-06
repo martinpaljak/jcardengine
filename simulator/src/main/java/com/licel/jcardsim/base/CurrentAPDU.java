@@ -68,7 +68,7 @@ public class CurrentAPDU {
             Constructor<APDU> ctor = APDU.class.getDeclaredConstructor();
             ctor.setAccessible(true);
             this.apdu = ctor.newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new Error("Could not set up simulator");
         }
     }

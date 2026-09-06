@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter xmlns="https://github.com/spotbugs/filter/3.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
-    <!-- Ignore unavoidable things in sample applets-->
-    <Match>
-        <Package name="com.licel.jcardsim.samples"/>
-        <Bug pattern="CT_CONSTRUCTOR_THROW,ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD,MS_SHOULD_BE_FINAL"/>
-    </Match>
     <!-- Applet.install() is designed like this -->
     <Match>
         <Method name="install" params="byte[],short,byte" returns="void"/>
@@ -16,28 +11,27 @@
         <Class name="com.licel.jcardsim.base.CurrentAPDU"/>
         <Bug pattern="CT_CONSTRUCTOR_THROW,EI_EXPOSE_REP"/>
     </Match>
-    <!-- Allocation inside constructor with JCSystem.make* -->
+    <!-- The APDU buffer, RAM, registry and RNG are card-wide singletons -->
     <Match>
-        <Package name="com.licel.jcardsim.crypto"/>
-        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="com.licel.jcardsim.base.Simulator"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
     </Match>
-    <!-- Ignore currently inevitable in upstream JC API-s-->
+    <!-- init() binds the applet's Key object, which sign() reads at call time -->
+    <Match>
+        <Class name="com.licel.jcardsim.crypto.AsymmetricSignatureImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+    <!-- Ignore currently inevitable in upstream JC API-s -->
     <Match>
         <Or>
             <Package name="~javacard\..*"/>
             <Package name="~javacardx\..*"/>
         </Or>
-        <Bug pattern="CT_CONSTRUCTOR_THROW,HSM_HIDING_METHOD,EI_EXPOSE_REP,EQ_ALWAYS_FALSE,HE_INHERITS_EQUALS_USE_HASHCODE"/>
+        <Bug pattern="CT_CONSTRUCTOR_THROW,HSM_HIDING_METHOD,EQ_ALWAYS_FALSE,HE_INHERITS_EQUALS_USE_HASHCODE"/>
     </Match>
+    <!-- Callers mutate the ISD entry and the global PIN through the returned reference -->
     <Match>
-        <Class name="pro.javacard.engine.globalplatform.EngineGlobalPIN"/>
-        <Bug pattern="MS_SHOULD_BE_FINAL"/>
-    </Match>
-    <!-- Mystery from GP API ? -->
-    <Match>
-        <Bug pattern="EQ_ALWAYS_FALSE"/>
-    </Match>
-    <Match>
-        <Class name="pro.javacard.engine.testapplets.FaultApplet"/>
+        <Class name="pro.javacard.engine.globalplatform.GlobalPlatformEngine"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
     </Match>
 </FindBugsFilter>

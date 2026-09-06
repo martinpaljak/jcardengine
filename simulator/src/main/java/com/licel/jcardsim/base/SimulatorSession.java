@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 
 // Session object lifetime guards the held lock for the simulator
 // XXX: opportunistic locking requires timed release.
-public class SimulatorSession implements BIBO {
+public final class SimulatorSession implements BIBO {
     private static final Logger log = LoggerFactory.getLogger(SimulatorSession.class);
 
     // I like my threads with nice names.

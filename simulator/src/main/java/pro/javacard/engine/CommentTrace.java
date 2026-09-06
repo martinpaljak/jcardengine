@@ -82,10 +82,10 @@ public final class CommentTrace {
                 Path rel = Path.of("").toAbsolutePath().relativize(src.toAbsolutePath());
                 anchors.put(c.getKey(), anchor(Files.readAllLines(src, encoding), ranges.getKey(), ranges.getValue(), c.getValue(), c.getKey(), m -> warn.accept(rel + ":" + m)));
             }
+            Path dir = out.resolve(pkg);
+            Files.createDirectories(dir);
             for (Path file : e.getValue()) {
-                Path target = out.resolve(classes.relativize(file));
-                Files.createDirectories(target.getParent());
-                Files.write(target, attach(bytes.get(file), anchors.getOrDefault(sourceOf.get(file), List.of())));
+                Files.write(dir.resolve(file.getFileName()), attach(bytes.get(file), anchors.getOrDefault(sourceOf.get(file), List.of())));
             }
         }
     }
