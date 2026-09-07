@@ -10,9 +10,6 @@ import javacard.security.CryptoException;
 public final class ChecksumProxy {
 
     public static Checksum getInstance(byte algorithm, boolean externalAccess) throws CryptoException {
-        if (externalAccess) {
-            CryptoException.throwIt(CryptoException.NO_SUCH_ALGORITHM);
-        }
         switch (algorithm) {
             case Checksum.ALG_ISO3309_CRC16:
                 return new CRC16();

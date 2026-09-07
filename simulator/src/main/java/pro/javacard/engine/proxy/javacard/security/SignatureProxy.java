@@ -33,9 +33,6 @@ public class SignatureProxy {
      */
     public static final Signature getInstance(byte algorithm, boolean externalAccess)
             throws CryptoException {
-        if (externalAccess) {
-            CryptoException.throwIt(CryptoException.NO_SUCH_ALGORITHM);
-        }
         Signature instance = SymmetricSignatureImpl.getInstance(algorithm);
         if (instance == null) {
             instance = AsymmetricSignatureImpl.getInstance(algorithm);
@@ -48,9 +45,6 @@ public class SignatureProxy {
 
     public static final Signature getInstance(byte messageDigestAlgorithm, byte cipherAlgorithm,
                                               byte paddingAlgorithm, boolean externalAccess) throws CryptoException {
-        if (externalAccess) {
-            CryptoException.throwIt(CryptoException.NO_SUCH_ALGORITHM);
-        }
         Signature instance = SymmetricSignatureImpl.getInstance(messageDigestAlgorithm, cipherAlgorithm, paddingAlgorithm);
         if (instance == null) {
             instance = AsymmetricSignatureImpl.getInstance(messageDigestAlgorithm, cipherAlgorithm, paddingAlgorithm);

@@ -15,9 +15,6 @@ import javacard.security.KeyAgreement;
 public class KeyAgreementProxy {
 
     public static final KeyAgreement getInstance(byte algorithm, boolean externalAccess) throws CryptoException {
-        if (externalAccess) {
-            CryptoException.throwIt(CryptoException.NO_SUCH_ALGORITHM);
-        }
         KeyAgreement instance = KeyAgreementImpl.getInstance(algorithm);
         if (instance == null) {
             CryptoException.throwIt(CryptoException.NO_SUCH_ALGORITHM);

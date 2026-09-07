@@ -33,9 +33,6 @@ public class CipherProxy {
      *                         </ul>
      */
     public static final Cipher getInstance(byte algorithm, boolean externalAccess) throws CryptoException {
-        if (externalAccess) {
-            CryptoException.throwIt(CryptoException.NO_SUCH_ALGORITHM);
-        }
         Cipher instance = SymmetricCipherImpl.getInstance(algorithm);
         if (instance == null) {
             instance = AsymmetricCipherImpl.getInstance(algorithm);
@@ -50,9 +47,6 @@ public class CipherProxy {
     }
 
     public static final Cipher getInstance(byte cipherAlgorithm, byte paddingAlgorithm, boolean externalAccess) throws CryptoException {
-        if (externalAccess) {
-            CryptoException.throwIt(CryptoException.NO_SUCH_ALGORITHM);
-        }
         Cipher instance = SymmetricCipherImpl.getInstance(cipherAlgorithm, paddingAlgorithm);
         if (instance == null) {
             instance = AsymmetricCipherImpl.getInstance(cipherAlgorithm, paddingAlgorithm);
