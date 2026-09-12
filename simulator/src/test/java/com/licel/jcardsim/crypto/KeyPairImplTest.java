@@ -130,9 +130,15 @@ public class KeyPairImplTest extends SimulatorCoreTest {
         byte[] generatedExponent = new byte[customExponent.length];
         publicKey.getExponent(generatedExponent, (short) 0);
         assertEquals(generatedExponent, customExponent);
-        // public exponent is capped at 32 bits; a 5-byte value is rejected
-        byte[] tooWide = new byte[]{(byte) 0x01, (byte) 0x02, (byte) 0x03, (byte) 0x04, (byte) 0x05};
         RSAPublicKey wideKey = (RSAPublicKey) KeyBuilder.buildKey(KeyBuilder.TYPE_RSA_PUBLIC, KeyBuilder.LENGTH_RSA_1024, false);
+        // an exponent wider than 4 bytes is accepted and read back at its own length
+        byte[] wideExponent = new byte[]{(byte) 0x01, 0, 0, 0, 0, 0, 0, (byte) 0x01};
+        wideKey.setExponent(wideExponent, (short) 0, (short) wideExponent.length);
+        byte[] readBack = new byte[wideExponent.length];
+        assertEquals(wideKey.getExponent(readBack, (short) 0), (short) wideExponent.length);
+        assertEquals(readBack, wideExponent);
+        // an exponent wider than the modulus cannot satisfy e < n and is rejected
+        byte[] tooWide = new byte[(KeyBuilder.LENGTH_RSA_1024 / 8) + 1];
         assertThrows(CryptoException.class, () -> wideKey.setExponent(tooWide, (short) 0, (short) tooWide.length));
     }
 

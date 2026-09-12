@@ -16,18 +16,13 @@ import java.security.SecureRandom;
 
 public class RSAKeyImpl extends KeyWithParameters implements RSAPrivateKey, RSAPublicKey {
 
-    // JavaCard API maximum public exponent length
-    private static final short PUBLIC_EXPONENT_MAX_BYTES = 4;
-
     private final ByteContainer exponent;
     private final ByteContainer modulus;
 
     public RSAKeyImpl(byte keyType, short size, byte memoryType) {
         super(keyType, size, memoryType);
         modulus = new ByteContainer(memoryType, size / 8);
-        exponent = isPrivate()
-                ? new ByteContainer(memoryType, size / 8)
-                : new ByteContainer(memoryType, PUBLIC_EXPONENT_MAX_BYTES, true);
+        exponent = new ByteContainer(memoryType, size / 8, !isPrivate());
     }
 
     private boolean isPrivate() {
